@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-storage-pv
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /srv/nfs/kubedata/
+    server: 192.168.1.210
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      securityContext:
+        fsGroup: 1001
+      containers:
+      - name: mongodb
+        image: mongodb/mongodb-community-server:latest
+        args: ["--bind_ip_all", "--keyFile", "/data/configdb/mongo-keyfile/mkey"]
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGODB_INITDB_ROOT_USERNAME
+          value: "admin"
+        - name: MONGODB_INITDB_ROOT_PASSWORD
+          value: "secret"
+        volumeMounts:
+        - name: mongodb-storage
+          mountPath: /data/db
+        - name: mongodb-keyfile
+          mountPath: /data/configdb/mongo-keyfile  # Mount the keyfile directly here
+          readOnly: true
+        securityContext:
+          runAsUser: 1001  # Assuming your 'mongodb' user has UID 1001
+          runAsGroup: 1001  # Assuming your 'mongodb' user has GID 1001
+      volumes:
+      - name: mongodb-keyfile
+        persistentVolumeClaim:
+          claimName: mongodb-keyfile-pvc
+      - name: mongodb-storage
+        persistentVolumeClaim:
+          claimName: mongodb-storage-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-keyfile-pv
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /srv/nfs/mongo-keyfile
+    server: 192.168.1.210
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-keyfile-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-storage-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017
+  selector:
+    app: mongodb
+  type: ClusterIP

@@ -1,0 +1,162 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-storage-pv
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /srv/nfs/kubedata/
+    server: 192.168.1.210
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-storage-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+spec:
+  serviceName: "mongodb-service"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      securityContext:
+        fsGroup: 1001
+      initContainers:
+      - name: init-mongo
+        image: mongo:latest
+        env:  # Add env section to inject POD_NAME
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+        command:
+         - "sh"
+         - "-c"
+         - |
+           set -x
+           if [ "$POD_NAME" = "mongodb-0" ]; then # Only run on the first Pod 
+             if mongosh --username admin --password secret --authenticationDatabase admin --eval "rs.status()" &>/dev/null; then
+                 echo "Replica set already initialized";
+                 exit 0;
+             else
+                 echo "Initializing replica set";
+                 sleep 10
+                 mongosh --host "mongodb-0.mongodb-service.default.svc.cluster.local:27017" --username admin --password secret --authenticationDatabase admin --eval "
+                     rs.initiate({
+                         _id: 'rs0',
+                         members: [
+                             { _id: 0, host: 'mongodb-0.mongodb-service.default.svc.cluster.local:27017' },
+                             { _id: 1, host: 'mongodb-1.mongodb-service.default.svc.cluster.local:27017' },
+                             { _id: 2, host: 'mongodb-2.mongodb-service.default.svc.cluster.local:27017' }
+                         ]
+                     });
+                 ";
+             fi
+           else
+             echo "Not the first pod, skipping initialization"
+           fi
+      containers:
+      - name: mongodb
+        image: mongodb/mongodb-community-server:latest
+        args: ["--replSet", "rs0", "--bind_ip_all", "--keyFile", "/data/configdb/mongo-keyfile/mkey"]
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGODB_INITDB_ROOT_USERNAME
+          value: "admin"
+        - name: MONGODB_INITDB_ROOT_PASSWORD
+          value: "secret"
+        - name: MONGO_REPLICA_SET_NAME
+          value: "rs0"
+        - name: POD_NAME  # Use the Downward API to inject the Pod name as an env variable
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+        - name: mongodb-storage
+          mountPath: /data/db
+          subPathExpr: $(POD_NAME)-db # Use the subPathExpr to inject the Pod name. Not subPath.
+        - name: mongodb-keyfile
+          mountPath: /data/configdb/mongo-keyfile
+          readOnly: true
+        securityContext:
+          runAsUser: 1001
+          runAsGroup: 1001
+        readinessProbe:  # Add readiness probe
+          exec:
+            command:
+            - mongosh
+            - --username
+            - admin
+            - --password
+            - secret
+            - --authenticationDatabase
+            - admin
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 20
+          periodSeconds: 10
+      volumes:
+      - name: mongodb-keyfile
+        persistentVolumeClaim:
+          claimName: mongodb-keyfile-pvc
+      - name: mongodb-storage
+        persistentVolumeClaim:
+          claimName: mongodb-storage-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-keyfile-pv
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /srv/nfs/mongo-keyfile
+    server: 192.168.1.210
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-keyfile-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+  namespace: default
+spec:
+  clusterIP: None # This makes it a headless service
+  selector:
+    app: mongodb
+  ports:
+    - port: 27017
+      targetPort: 27017
