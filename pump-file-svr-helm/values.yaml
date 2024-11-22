@@ -1,0 +1,22 @@
+replicaCount: 1
+
+app:
+  name: pump-upload-server
+
+env: prod
+
+image:
+  registry: nthskyradiated
+  repository: pump-upload-server
+  port: 3000
+  tag: latest
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+service:
+  name: pump-upload-svr-service
+  type: ClusterIP
+  port: 3000
+  protocol: TCP

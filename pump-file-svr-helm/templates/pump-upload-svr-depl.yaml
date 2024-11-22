@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pump-upload-svr-deployment
+  labels:
+    app: {{ .Values.app.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.name }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8080"
+
+    spec:
+      containers:
+      - name: pump-upload-server
+        image: {{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}{{ if eq .Values.env "dev" }}-dev{{ end }}
+        ports:
+        - containerPort: {{ .Values.image.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name}}
+spec:
+  selector:
+    app: pump-upload-svr
+  ports:
+  - protocol: {{ .Values.service.protocol }}
+    port: {{ .Values.service.port }}
+    targetPort: {{ .Values.service.port }}
+  type: {{ .Values.service.type }}
