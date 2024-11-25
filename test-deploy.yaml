@@ -5,7 +5,7 @@ metadata:
   namespace: prod
 spec:
   capacity:
-    storage: 90Mi
+    storage: 60Mi
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
@@ -32,7 +32,7 @@ metadata:
   namespace: prod
 spec:
   serviceName: "mongodb-service"
-  replicas: 4
+  replicas: 2
   selector:
     matchLabels:
       app: mongodb-prod
@@ -104,7 +104,7 @@ spec:
         - name: MONGO_AUTH_DB
           value: "admin"
         - name: MONGO_REPLICA_SET_SIZE
-          value: "4"  # Set the default replica set size (override with environment variable if different)
+          value: "2"  # Set the default replica set size (override with environment variable if different)
         - name: POD_NAME
           valueFrom:
             fieldRef:
@@ -121,32 +121,33 @@ spec:
             done
             echo "$POD_HOST is ready!"
           }
-
+    
           # Loop to check readiness for each replica pod
-          for i in $(seq 0 $((MONGO_REPLICA_SET_SIZE - 1))); do
-            check_pod_ready "mongodb-prod-${i}.mongodb-service.prod.svc.cluster.local:$MONGO_PORT"
-          done
-
+            for i in $(seq 0 $((MONGO_REPLICA_SET_SIZE - 1))); do
+              check_pod_ready "mongodb-prod-${i}.mongodb-service.prod.svc.cluster.local:$MONGO_PORT"
+            done
+    
           # Build the members array for rs.initiate dynamically
-          INITIATE_SCRIPT="rs.initiate({ _id: '$MONGO_REPLICA_SET_NAME', members: ["
-          for i in $(seq 0 $((MONGO_REPLICA_SET_SIZE - 1))); do
-            INITIATE_SCRIPT="${INITIATE_SCRIPT}{ _id: $i, host: 'mongodb-prod-${i}.mongodb-service.prod.svc.cluster.local:$MONGO_PORT' },"
-          done
-          # Close members array and replica set configuration
-          INITIATE_SCRIPT="${INITIATE_SCRIPT%,} ] })"
-
+            INITIATE_SCRIPT="rs.initiate({ _id: '$MONGO_REPLICA_SET_NAME', members: ["
+            for i in $(seq 0 $((MONGO_REPLICA_SET_SIZE - 1))); do
+              INITIATE_SCRIPT="${INITIATE_SCRIPT}{ _id: $i, host: 'mongodb-prod-${i}.mongodb-service.prod.svc.cluster.local:$MONGO_PORT' },
+            done
+          # Trim trailing comma and close the members array
+          INITIATE_SCRIPT="${INITIATE_SCRIPT%?} ] });"
+    
           # Check if the replica set is already initialized
-          if mongosh --host "mongodb-prod-0.mongodb-service.prod.svc.cluster.local" --username "$MONGO_ADMIN_USER" --password "$MONGO_ADMIN_PASS" --authenticationDatabase "$MONGO_AUTH_DB" --eval 'rs.status().ok' --quiet | grep 1; then
-            echo "Replica set already initialized"
-          else
-            echo "Initializing replica set with $MONGO_REPLICA_SET_SIZE members"
-            mongosh --host "mongodb-prod-0.mongodb-service.prod.svc.cluster.local" --username "$MONGO_ADMIN_USER" --password "$MONGO_ADMIN_PASS" --authenticationDatabase "$MONGO_AUTH_DB" --eval "$INITIATE_SCRIPT"
-          fi
-
+            if mongosh --host "mongodb-prod-0.mongodb-service.prod.svc.cluster.local" --username "$MONGO_ADMIN_USER" --password "$MONGO_ADMIN_PASS" --authenticationDatabase "$MONGO_AUTH_DB" --eval 'rs.status().ok' --quiet | grep 1; then
+              echo "Replica set already initialized"
+            else
+              echo "Initializing replica set with $MONGO_REPLICA_SET_SIZE members"
+              mongosh --host "mongodb-prod-0.mongodb-service.prod.svc.cluster.local" --username "$MONGO_ADMIN_USER" --password "$MONGO_ADMIN_PASS" --authenticationDatabase "$MONGO_AUTH_DB" --eval "$INITIATE_SCRIPT"
+            fi
+    
           # Keep the sidecar running to monitor replica set status
-          while true; do
-            sleep 300
-          done
+            while true; do
+              sleep 300
+            done
+
       - name: mongo-exporter
         image: bitnami/mongodb-exporter
         imagePullPolicy: IfNotPresent
