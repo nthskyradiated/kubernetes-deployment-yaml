@@ -1,0 +1,10 @@
+#!/bin/bash
+alias k='kubectl'
+alias kgp='kubectl get pod'
+alias kgs='kubectl get svc'
+alias kgsec='kubectl get secret'
+alias kaf='kubectl apply -f'
+alias kdf='kubectl delete -f'
+alias kga='kubectl get all -A'
+alias kd='kubectl describe'
+alias kgn='kubectl get namespace'
