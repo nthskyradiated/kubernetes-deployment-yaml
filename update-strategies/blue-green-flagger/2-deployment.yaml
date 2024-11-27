@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: express-api
-  namespace: pump-factory
+  namespace: staging
 spec:
   replicas: 2
   selector:
