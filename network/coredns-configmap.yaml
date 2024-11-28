@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns
+  namespace: kube-system
+data:
+  Corefile: |
+    .:53 {
+        errors
+        health
+        kubernetes cluster.local in-addr.arpa ip6.arpa {
+            pods verified
+            fallthrough in-addr.arpa ip6.arpa
+            ttl 30
+            upstream 8.8.8.8 8.8.4.4  # Optional: Specify custom upstream DNS servers
+            cache 30
+            loop
+            reload
+            loadbalance
+        }
+        forward . /etc/resolv.conf
+        cache 30
+        loop
+        reload
+        loadbalance
+    }
