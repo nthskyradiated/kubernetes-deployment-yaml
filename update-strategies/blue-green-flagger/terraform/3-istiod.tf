@@ -5,7 +5,7 @@ resource "helm_release" "istiod" {
   chart            = "istiod"
   namespace        = "istio-system"
   create_namespace = true
-  version          = "1.18.2"
+  version          = "1.24.0"
 
   set {
     name  = "telemetry.enabled"

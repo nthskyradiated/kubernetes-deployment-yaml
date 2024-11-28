@@ -13,7 +13,7 @@ spec:
     name: express-api
   progressDeadlineSeconds: 60
   service:
-    port: 8080
+    port: 8181
     portDiscovery: true
   analysis:
     interval: 30s

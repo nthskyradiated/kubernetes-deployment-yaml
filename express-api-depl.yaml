@@ -21,14 +21,16 @@ spec:
     spec:
       containers:
       - name: express-api
-        image: nthskyradiated/express-ts-api:v1.0
+        image: nthskyradiated/express-ts-api:blue
         ports:
-        - containerPort: 8080
+        - containerPort: 8181
         env:
+        - name: PORT
+          value: "8181"
         - name: MONGO_URI
           value: "mongodb://admin:secret@mongodb-service:27017/collections?authSource=admin"
       imagePullSecrets:
-      - name: regcred
+      - name: docker-secret
 ---
 apiVersion: v1
 kind: Service
@@ -39,6 +41,6 @@ spec:
     app: express-api
   ports:
   - protocol: TCP
-    port: 8080
-    targetPort: 8080
+    port: 8181
+    targetPort: 8181
   type: ClusterIP

@@ -1,0 +1,12 @@
+Name:         allow-apiserver
+Namespace:    calico-apiserver
+Created on:   2024-11-28 07:10:06 +0000 UTC
+Labels:       <none>
+Annotations:  <none>
+Spec:
+  PodSelector:     apiserver=true
+  Allowing ingress traffic:
+    To Port: 5443/TCP
+    From: <any> (traffic not restricted by source)
+  Not affecting egress traffic
+  Policy Types: Ingress

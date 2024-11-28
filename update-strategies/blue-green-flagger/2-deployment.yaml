@@ -25,17 +25,16 @@ spec:
           image: nthskyradiated/express-ts-api:blue
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 8181
           startupProbe:
             tcpSocket:
-              port: 8080
+              port: 8181
             initialDelaySeconds: 20
             periodSeconds: 5
           env:
           - name: MONGO_URI
             value: mongodb+srv://andypandaan:uEMVUbYqtLwgxeu5@exp-cluster-0.tc1gf.mongodb.net/?retryWrites=true&w=majority&appName=exp-cluster-0
           - name: PORT
-            value: "8080"
+            value: "8181"
       imagePullSecrets:
       - name: docker-secret
-
