@@ -12,7 +12,7 @@ data:
             pods verified
             fallthrough in-addr.arpa ip6.arpa
             ttl 30
-            upstream 8.8.8.8 8.8.4.4  # Optional: Specify custom upstream DNS servers
+            forward . 127.0.0.1:53
             cache 30
             loop
             reload
