@@ -5,5 +5,5 @@ resource "helm_release" "istio_base" {
   chart            = "base"
   namespace        = "istio-system"
   create_namespace = true
-  version          = "1.24.0"
+  version          = "1.24.1"
 }
