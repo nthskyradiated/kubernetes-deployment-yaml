@@ -5,5 +5,5 @@ resource "helm_release" "loadtester" {
   chart            = "loadtester"
   namespace        = "flagger"
   create_namespace = true
-  version          = "0.28.1"
+  version          = "0.34.0"
 }

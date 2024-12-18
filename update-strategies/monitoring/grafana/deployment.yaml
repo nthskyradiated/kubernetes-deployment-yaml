@@ -21,7 +21,7 @@ spec:
         runAsUser: 472
       containers:
         - name: grafana
-          image: grafana/grafana:10.0.3
+          image: grafana/grafana:11.4.0
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: config
@@ -33,6 +33,15 @@ spec:
             - name: dashboards
               mountPath: "/etc/grafana/provisioning/dashboards/dashboardproviders.yaml"
               subPath: dashboardproviders.yaml
+            - name: dashboard-v1
+              mountPath: "/var/lib/grafana/dashboards/kubernetes/dashboard-v1.json"
+              subPath: dashboard-v1.json
+            - name: dashboard-v2
+              mountPath: "/var/lib/grafana/dashboards/kubernetes/dashboard-v2.json"
+              subPath: dashboard-v2.json
+            - name: flagger-v1
+              mountPath: "/var/lib/grafana/dashboards/kubernetes/flagger-v1.json"
+              subPath: flagger-v1.json
           ports:
             - name: grafana
               containerPort: 3000
@@ -62,10 +71,10 @@ spec:
           resources:
             requests:
               cpu: 500m
-              memory: 1Gi
+              memory: 512Mi
             limits:
               cpu: 2000m
-              memory: 4Gi
+              memory: 2Gi
       volumes:
         - name: config
           configMap:
@@ -76,3 +85,12 @@ spec:
         - name: dashboards
           configMap:
             name: dashboards
+        - name: dashboard-v1
+          configMap:
+            name: dashboard-v1
+        - name: dashboard-v2
+          configMap:
+            name: dashboard-v2
+        - name: flagger-v1
+          configMap:
+            name: flagger-v1

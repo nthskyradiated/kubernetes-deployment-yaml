@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: express-api
+  namespace: staging
+spec:
+  selector:
+    app: express-api
+  ports:
+    - protocol: TCP
+      port: 8181
+      targetPort: http

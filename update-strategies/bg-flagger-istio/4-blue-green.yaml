@@ -32,7 +32,7 @@ spec:
         interval: 30s
     webhooks:
       - name: load-test
-        url: http://loadtester.istio-system/
+        url: http://loadtester.flagger/
         timeout: 5s
         metadata:
-          cmd: "hey -z 10m -q 10 -c 2 http://express-api-canary.staging:8080/version"
+          cmd: "hey -z 10m -q 10 -c 2 http://express-api-canary.staging:8181/"

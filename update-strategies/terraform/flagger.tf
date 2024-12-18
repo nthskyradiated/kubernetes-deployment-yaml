@@ -5,7 +5,7 @@ resource "helm_release" "flagger" {
   chart            = "flagger"
   namespace        = "flagger"
   create_namespace = true
-  version          = "1.32.0"
+  version          = "1.40.0"
 
   set {
     name  = "crd.create"

@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-api
+  namespace: staging
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: express-api
+      istio: monitor
+  template:
+    metadata:
+      labels:
+        app: express-api
+        istio: monitor
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+        - name: express-api
+          image: nthskyradiated/express-ts-api:green
+          ports:
+            - name: http
+              containerPort: 8181
+          startupProbe:
+            tcpSocket:
+              port: 8181
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          env:
+          - name: MONGO_URI
+            value: mongodb+srv://andypandaan:uEMVUbYqtLwgxeu5@exp-cluster-0.tc1gf.mongodb.net/?retryWrites=true&w=majority&appName=exp-cluster-0
+          - name: PORT
+            value: "8181"
+      imagePullSecrets:
+      - name: docker-secret
