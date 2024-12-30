@@ -5,7 +5,7 @@ metadata:
   name: express-api
   namespace: staging
 spec:
-  replicas: 5
+  replicas: 3
   selector:
     matchLabels:
       app: express-api
@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: express-api
-          image: nthskyradiated/express-ts-api:green
+          image: nthskyradiated/express-ts-api:blue
           ports:
             - name: http
               containerPort: 8181

@@ -5,24 +5,22 @@ metadata:
   name: main
   namespace: monitoring
 spec:
-  version: v2.46.0
+  version: v2.55.0
   serviceAccountName: prometheus
   podMonitorSelector:
     matchLabels:
       prometheus: main
   podMonitorNamespaceSelector:
-    matchLabels:
-      monitoring: prometheus
+    matchLabels: {}
   serviceMonitorSelector:
     matchLabels:
       prometheus: main
   serviceMonitorNamespaceSelector:
-    matchLabels:
-      monitoring: prometheus
+    matchLabels: {}
   replicas: 1
   logLevel: info
   logFormat: logfmt
-  retention: 7d
+  retention: 1d
   scrapeInterval: 5s
   securityContext:
     fsGroup: 0
