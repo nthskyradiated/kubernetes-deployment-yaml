@@ -141,8 +141,8 @@ data:
                 "uid": "PEB814BE3CA3B78C0"
               },
               "editorMode": "code",
-              "expr": "sum(rate(request_duration_seconds_count{job=\"monitoring/myapp-control\",status!~\"[4-5].*\"}[1m])) / sum(rate(request_duration_seconds_count{job=\"monitoring/myapp-control\"}[1m]))",
-              "legendFormat": "Control",
+              "expr": "sum(rate(request_duration_seconds_count{job=\"monitoring/pf-api\",status!~\"[4-5].*\"}[1m])) / sum(rate(request_duration_seconds_count{job=\"monitoring/pf-api\"}[1m]))",
+              "legendFormat": "Primary",
               "range": true,
               "refId": "A"
             },
@@ -152,7 +152,7 @@ data:
                 "uid": "PEB814BE3CA3B78C0"
               },
               "editorMode": "code",
-              "expr": "sum(rate(request_duration_seconds_count{job=\"monitoring/myapp-canary\",status!~\"[4-5].*\"}[1m])) / sum(rate(request_duration_seconds_count{job=\"monitoring/myapp-canary\"}[1m]))",
+              "expr": "sum(rate(request_duration_seconds_count{job=\"monitoring/pf-api-canary\",status!~\"[4-5].*\"}[1m])) / sum(rate(request_duration_seconds_count{job=\"monitoring/pf-api-canary\"}[1m]))",
               "hide": false,
               "instant": false,
               "legendFormat": "Canary",
@@ -253,9 +253,9 @@ data:
                 "uid": "1_j4Lb87z"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket{job=\"monitoring/myapp-control\"}[1m])) by (le))",
+              "expr": "histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket{job=\"monitoring/pf-api\"}[1m])) by (le))",
               "instant": false,
-              "legendFormat": "p95 - Control",
+              "legendFormat": "p95 - Primary",
               "range": true,
               "refId": "A"
             },
@@ -265,7 +265,7 @@ data:
                 "uid": "PEB814BE3CA3B78C0"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket{job=\"monitoring/myapp-canary\"}[1m])) by (le))",
+              "expr": "histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket{job=\"monitoring/pf-api-canary\"}[1m])) by (le))",
               "hide": false,
               "instant": false,
               "legendFormat": "p95 - Canary",
@@ -364,9 +364,9 @@ data:
                 "uid": "PEB814BE3CA3B78C0"
               },
               "editorMode": "code",
-              "expr": "sum(rate(request_duration_seconds_count{job=\"monitoring/myapp-control\"}[1m]))",
+              "expr": "sum(rate(request_duration_seconds_count{job=\"monitoring/pf-api\"}[1m]))",
               "instant": false,
-              "legendFormat": "Control",
+              "legendFormat": "Primary",
               "range": true,
               "refId": "A"
             },
@@ -376,7 +376,7 @@ data:
                 "uid": "PEB814BE3CA3B78C0"
               },
               "editorMode": "code",
-              "expr": "sum(rate(request_duration_seconds_count{job=\"monitoring/myapp-canary\"}[1m]))",
+              "expr": "sum(rate(request_duration_seconds_count{job=\"monitoring/pf-api-canary\"}[1m]))",
               "hide": false,
               "instant": false,
               "legendFormat": "Canary",

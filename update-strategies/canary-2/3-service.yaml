@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: pf-api
-  namespace: staging
+  namespace: default
 spec:
   selector:
     app: pf-api

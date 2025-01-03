@@ -2,38 +2,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pf-api
-  namespace: staging
+  name: pf-api-canary
+  namespace: default
 spec:
-  replicas: 3
+  replicas: 0
   selector:
     matchLabels:
       app: pf-api
-      istio: monitor
+      type: canary
   template:
     metadata:
       labels:
         app: pf-api
-        istio: monitor
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"
-        prometheus.io/port: "8080"
+        type: canary
     spec:
       containers:
         - name: pf-api
-          image: nthskyradiated/pf-api-go:v4
-          imagePullPolicy: Always
+          image: nthskyradiated/pf-api-go:v2
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 3000
           startupProbe:
             tcpSocket:
-              port: 3000
+              port: http
             initialDelaySeconds: 20
             periodSeconds: 5
           env:
           - name: MONGODB_URI
-            value: mongodb+srv://andypandaan:uEMVUbYqtLwgxeu5@exp-cluster-0.tc1gf.mongodb.net/?retryWrites=true&w=majority&appName=exp-cluster-0
+            value: mongodb+srv://andypandaan:uEMVUbYqtLwgxeu5@exp-cluster-0.tc1gf.mongodb.net/?retryWrites=true&w=major>
           - name: PORT
             value: "3000"
