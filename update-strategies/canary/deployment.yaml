@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: pf-api
-          image: nthskyradiated/pf-api-go:v4
+          image: nthskyradiated/pf-api-go:v1
           imagePullPolicy: Always
           ports:
             - name: http

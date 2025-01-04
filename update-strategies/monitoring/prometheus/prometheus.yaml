@@ -5,7 +5,7 @@ metadata:
   name: main
   namespace: monitoring
 spec:
-  version: v2.55.0
+  version: v3.1.0
   serviceAccountName: prometheus
   podMonitorSelector:
     matchLabels:
@@ -13,6 +13,7 @@ spec:
   podMonitorNamespaceSelector:
     matchLabels: {}
   serviceMonitorSelector:
+  #  matchLabels: {}
     matchLabels:
       prometheus: main
   serviceMonitorNamespaceSelector:
