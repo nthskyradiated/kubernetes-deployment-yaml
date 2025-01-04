@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pf-api
+  name: pf-api-primary
   namespace: default
 spec:
   replicas: 3
@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
         - name: pf-api
-          image: nthskyradiated/pf-api-go:v1
-          imagePullPolicy: IfNotPresent
+          image: nthskyradiated/pf-api-go:v3
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3000
