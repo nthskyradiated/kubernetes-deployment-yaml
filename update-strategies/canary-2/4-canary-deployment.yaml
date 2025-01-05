@@ -5,7 +5,7 @@ metadata:
   name: pf-api-canary
   namespace: default
 spec:
-  replicas: 3
+  replicas: 5
   selector:
     matchLabels:
       app: pf-api
