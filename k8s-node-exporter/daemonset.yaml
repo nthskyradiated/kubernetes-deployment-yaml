@@ -30,6 +30,7 @@ spec:
         ports:
           - containerPort: 9100
             protocol: TCP
+            name: metrics  # Name the port to match PodMonitor
         resources:
           limits:
             cpu: 250m
