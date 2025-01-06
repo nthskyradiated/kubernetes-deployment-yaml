@@ -5,7 +5,7 @@ metadata:
   name: pf-api-canary
   namespace: default
 spec:
-  replicas: 5
+  replicas: 3
   selector:
     matchLabels:
       app: pf-api
@@ -30,6 +30,11 @@ spec:
             periodSeconds: 5
           env:
           - name: MONGODB_URI
-            value: mongodb+srv://andypandaan:uEMVUbYqtLwgxeu5@exp-cluster-0.tc1gf.mongodb.net/?retryWrites=true&w=major>
+            valueFrom:
+              secretKeyRef:
+                name: pf-api-go-mongo-secret
+                key: mdb-uri
           - name: PORT
             value: "3000"
+          - name: ENV
+            value: "dev"
