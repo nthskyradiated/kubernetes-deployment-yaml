@@ -11,18 +11,6 @@ resource "helm_release" "prometheus_node_exporter" {
     name  = "service.portName"
     value = "node-exporter"
   }
-#  set {
-#    name  = "service.annotations"
-#    value = "\\{prometheus.io/port = \"9100\"\\}"
-#  }
-  set {
-    name = "prometheus.monitor.enabled"
-    value = true
-  }
-  set {
-    name = "prometheus.monitor.namespace"
-    value = "monitoring"
-  }
   set {
     name = "prometheus.podMonitor.enabled"
     value = true

@@ -8,14 +8,3 @@ resource "kubectl_manifest" "k8s_dashboard_rbac" {
 
   depends_on = [helm_release.k8s_dashboard]
 }
-
-data "kubectl_path_documents" "kube_state_metrics_svcmonitor" {
-  pattern = "./k8s-state-metrics/*.yaml"
-}
-
-resource "kubectl_manifest" "kube_state_metrics_svcmonitor" {
-  for_each  = toset(data.kubectl_path_documents.kube_state_metrics_svcmonitor.documents)
-  yaml_body = each.value
-
-  depends_on = [helm_release.kube_state_metrics]
-}
