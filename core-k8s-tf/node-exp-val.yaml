@@ -134,7 +134,7 @@ service:
   ## (IntOrString)
   targetPort: 9100
   ## Name of the service port. Sets the port name of the main container (NE) as well.
-  portName: metrics
+  portName: node-exporter
   ## Port number for service type NodePort
   nodePort: null
 
@@ -144,6 +144,7 @@ service:
   ## Additional annotations and labels for the service
   annotations:
     prometheus.io/scrape: "true"
+    
   labels: {}
 
   ## Dual stack settings for the service
@@ -240,11 +241,11 @@ prometheus:
   # For instance, there will not be the service label any longer which might
   # affect PromQL queries selecting that label.
   podMonitor:
-    enabled: false
+    enabled: true
     # Namespace in which to deploy the pod monitor. Defaults to the release namespace.
-    namespace: ""
+    namespace: "monitoring"
     # Additional labels, e.g. setting a label for pod monitor selector as set in prometheus
-    additionalLabels: {}
+    additionalLabels: { prometheus: main}
     #  release: kube-prometheus-stack
     # PodTargetLabels transfers labels of the Kubernetes Pod onto the target.
     podTargetLabels: []
