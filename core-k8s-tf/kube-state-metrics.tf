@@ -8,7 +8,15 @@ resource "helm_release" "kube_state_metrics" {
   version = "5.27.1"
 
 set {
-    name  = "Prometheus.monitor.namespace"
+    name  = "prometheus.monitor.enabled"
+    value = "true"
+  }
+set {
+    name  = "prometheus.monitor.namespace"
     value = "monitoring"
+  }
+set {
+    name  = "prometheus.monitor.additionalLabels.prometheus"
+    value = "main"
   }
 }

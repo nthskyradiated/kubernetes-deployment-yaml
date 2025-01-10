@@ -71,7 +71,7 @@ service:
   annotations: {}
 
 ## Additional labels to add to all resources
-customLabels: {}
+customLabels: {prometheus: main}
   # app: kube-state-metrics
 
 ## Override selector labels
@@ -169,10 +169,10 @@ env: {}
 
 prometheus:
   monitor:
-    enabled: false
+    enabled: true
     annotations: {}
-    additionalLabels: {}
-    namespace: ""
+    additionalLabels: {prometheus: main}
+    namespace: "monitoring"
     namespaceSelector: []
     jobLabel: ""
     targetLabels: []
