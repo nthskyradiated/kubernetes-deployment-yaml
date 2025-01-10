@@ -11,14 +11,10 @@ resource "helm_release" "prometheus_node_exporter" {
     name  = "service.portName"
     value = "node-exporter"
   }
-  set {
-    name  = "service.annotations.prometheus.io/scrape"
-    value = true
-  }
-  set {
-    name  = "service.annotations.prometheus.io/port"
-    value = "9100"
-  }
+#  set {
+#    name  = "service.annotations"
+#    value = "\\{prometheus.io/port = \"9100\"\\}"
+#  }
   set {
     name = "prometheus.monitor.enabled"
     value = true
@@ -28,17 +24,15 @@ resource "helm_release" "prometheus_node_exporter" {
     value = "monitoring"
   }
   set {
-    name = "podMonitor.enabled"
+    name = "prometheus.podMonitor.enabled"
     value = true
   }
   set {
-    name = "podMonitor.namespace"
+    name = "prometheus.podMonitor.namespace"
     value = "monitoring"
   }
-  set {
-    name = "podMonitor.additionalLabels"
-    value = {
-      "prometheus" = "main"
-    }
+set {
+    name  = "prometheus.podMonitor.additionalLabels.prometheus"
+    value = "main"
   }
 }

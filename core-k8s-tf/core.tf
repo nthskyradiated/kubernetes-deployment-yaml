@@ -10,16 +10,16 @@ resource "kubectl_manifest" "k8s_dashboard_rbac" {
 }
 
 
-data "kubectl_path_documents" "prometheus_node_exporter_podmonitor" {
-  pattern = "./node-exporter/*.yaml"
-}
+#data "kubectl_path_documents" "prometheus_node_exporter_podmonitor" {
+#  pattern = "./node-exporter/*.yaml"
+#}
 
-resource "kubectl_manifest" "prometheus_node_exporter_podmonitor" {
-  for_each  = toset(data.kubectl_path_documents.prometheus_node_exporter_podmonitor.documents)
-  yaml_body = each.value
+#resource "kubectl_manifest" "prometheus_node_exporter_podmonitor" {
+#  for_each  = toset(data.kubectl_path_documents.prometheus_node_exporter_podmonitor.documents)
+#  yaml_body = each.value
 
-  depends_on = [helm_release.prometheus_node_exporter]
-}
+#  depends_on = [helm_release.prometheus_node_exporter]
+#}
 
 data "kubectl_path_documents" "kube_state_metrics_svcmonitor" {
   pattern = "./k8s-state-metrics/*.yaml"
