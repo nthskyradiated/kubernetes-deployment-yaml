@@ -1,0 +1,16 @@
+# list all contexts
+kubectl config get-contexts
+
+# set user user credential to the conifg file
+kubectl config set-credentials <user> --client-certificate=<user>.crt --client-key=<user>.key
+
+# set user context
+kubectl config set-context <context-name> --cluster=<cluster-name> --user=<user> --namespace=<namespace>
+# use context
+kubectl config use-context <context-name>
+
+# Checking access level
+kubectl auth can-i get pods --as=<user> --namespace=<namespace>
+kubectl auth can-i delete pods --as=<user> --namespace=<namespace>
+kubectl auth can-i create pods --as=<user> --namespace=<namespace>
+kubectl auth can-i list pods --as=system:serviceaccount:monitoring:kubectl-sa -n monitoring

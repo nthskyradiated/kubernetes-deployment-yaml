@@ -1,0 +1,75 @@
+#!/bin/bash
+
+USER=""               # Replace with the username
+CLUSTERNAME=""     # Replace with your cluster name
+API_SERVER="" # Replace with the API server address
+API_SERVER_PORT=""    # Replace with the API server port
+CA_PATH="/etc/kubernetes/pki"
+
+# Generate CSR
+openssl genrsa -out "${USER}-key.pem" 2048
+openssl req -new -key "${USER}-key.pem" -out "${USER}.csr" -subj "/CN=${USER}/O=group"
+
+# Sign the CSR
+openssl x509 -req -in "${USER}.csr" \
+  -CA "${CA_PATH}/ca.crt" \
+  -CAkey "${CA_PATH}/ca.key" \
+  -CAcreateserial \
+  -out "${USER}-cert.pem" \
+  -days 365 \
+  -sha256
+
+# Verify the certificate
+openssl x509 -in "${USER}-cert.pem" -text -noout
+
+# Configure RBAC (for read-only access)
+cat <<EOF | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: read-only-access
+rules:
+- apiGroups: [""]
+  resources: ["*"]
+  verbs: ["get", "list"]
+EOF
+
+cat <<EOF | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: read-only-access-binding
+subjects:
+- kind: User
+  name: "${USER}"
+  apiGroup: ""
+roleRef:
+  kind: ClusterRole
+  name: read-only-access
+  apiGroup: rbac.authorization.k8s.io
+EOF
+
+# Create kubeconfig file
+kubectl config set-cluster "$CLUSTERNAME" \
+  --certificate-authority="${CA_PATH}/ca.crt" \
+  --embed-certs=true \
+  --server="https://${API_SERVER}:${API_SERVER_PORT}" \
+  --kubeconfig="${USER}-kubeconfig"
+
+kubectl config set-credentials "$USER" \
+  --client-certificate="${USER}-cert.pem" \
+  --client-key="${USER}-key.pem" \
+  --embed-certs=true \
+  --kubeconfig="${USER}-kubeconfig"
+
+kubectl config set-context "${CLUSTERNAME}-context" \
+  --cluster="$CLUSTERNAME" \
+  --namespace=default \
+  --user="$USER" \
+  --kubeconfig="${USER}-kubeconfig"
+
+kubectl config use-context "${CLUSTERNAME}-context" \
+  --kubeconfig="${USER}-kubeconfig"
+
+# Test the kubeconfig to access the cluster before distributing
+kubectl --kubeconfig="${USER}-kubeconfig" get pods -A
