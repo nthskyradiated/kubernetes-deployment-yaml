@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: pf-api
-          image: nthskyradiated/pf-api-go:v1
+          image: nthskyradiated/pf-api-go:v3
           imagePullPolicy: Always
           ports:
             - name: http
@@ -34,6 +34,9 @@ spec:
             periodSeconds: 5
           env:
           - name: MONGODB_URI
-            value: mongodb+srv://andypandaan:uEMVUbYqtLwgxeu5@exp-cluster-0.tc1gf.mongodb.net/?retryWrites=true&w=majority&appName=exp-cluster-0
+            valueFrom:
+              secretKeyRef:
+                name: pf-api-go-mdb-secret-staging
+                key: mdb-uri
           - name: PORT
             value: "3000"
