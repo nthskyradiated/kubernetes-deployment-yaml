@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pf-api-go
-  namespace: staging
+#  namespace: staging
   annotations:
     kubernetes.io/ingress.class: "nginx"
 spec:
