@@ -1,9 +1,9 @@
 ---
-global:
-  image:
-    tag: "v.2.12.6"
+#global:
+#  image:
+#    tag: "v.2.13.3"
 
-  server:
-    extraArgs:
-      - --insecure
+server:
+  extraArgs:
+    - --insecure
 
