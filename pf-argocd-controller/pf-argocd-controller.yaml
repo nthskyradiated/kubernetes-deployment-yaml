@@ -1,0 +1,28 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pumpfactory-argocd
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: nthskyradiated/pump-upload-server:~v0.1
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/foreground
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:nthskyradiated/pumpfactory-argocd.git
+    targetRevision: main
+    path: env/
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=false
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
