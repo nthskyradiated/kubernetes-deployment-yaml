@@ -14,6 +14,8 @@ spec:
     repoURL: git@github.com:nthskyradiated/pumpfactory-argocd.git
     targetRevision: main
     path: ./pumpfactory-apps
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:
