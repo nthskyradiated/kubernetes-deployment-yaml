@@ -1,3 +1,6 @@
 [submodule "express-api"]
 	path = express-api
 	url = https://github.com/nthskyradiated/express-api
+[submodule "pumpfactory-argocd"]
+	path = pumpfactory-argocd
+	url = https://github.com/nthskyradiated/pumpfactory-argocd
