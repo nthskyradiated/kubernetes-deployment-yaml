@@ -10,6 +10,6 @@ config:
     - name: Docker Hub
       api_url: https://registry-1.docker.io
       ping: yes
-      credentials: secret:argocd/dockerhub#my-token
+      credentials: secret:argocd/dockerhub-argocd#my-token
       limit: 20
       default: true
