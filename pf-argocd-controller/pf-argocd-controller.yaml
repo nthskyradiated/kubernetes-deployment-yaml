@@ -4,8 +4,8 @@ kind: Application
 metadata:
   name: pumpfactory-argocd
   namespace: argocd
-  annotations:
-    argocd-image-updater.argoproj.io/image-list: nthskyradiated/pump-upload-server:~v0.1
+  # annotations:
+    # argocd-image-updater.argoproj.io/image-list: nthskyradiated/pump-upload-server:~v0.1
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
 spec:
