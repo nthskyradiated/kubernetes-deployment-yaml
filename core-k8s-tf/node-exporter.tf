@@ -1,3 +1,4 @@
+# NOTE: Need prometheus CRD from ../update-strategies/terraform/
 resource "helm_release" "prometheus_node_exporter" {
   name = "node-exporter"
 
@@ -7,20 +8,22 @@ resource "helm_release" "prometheus_node_exporter" {
   create_namespace = true
   version          = "4.43.1"
 
-  set {
+  set = [
+  {
     name  = "service.portName"
     value = "node-exporter"
-  }
-  set {
+  },
+  {
     name = "prometheus.podMonitor.enabled"
     value = true
-  }
-  set {
+  },
+  {
     name = "prometheus.podMonitor.namespace"
     value = "monitoring"
-  }
-set {
+  },
+  {
     name  = "prometheus.podMonitor.additionalLabels.prometheus"
     value = "main"
   }
+  ]
 }

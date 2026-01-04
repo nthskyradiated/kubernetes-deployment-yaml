@@ -7,18 +7,21 @@ resource "helm_release" "flagger" {
   create_namespace = true
   version          = "1.40.0"
 
-  set {
+  set = [
+  {
     name  = "crd.create"
     value = "false"
-  }
+  },
 
-  set {
+   {
     name  = "meshProvider"
     value = "istio"
-  }
-
-  set {
+  },
+  {
     name  = "metricsServer"
     value = "http://prometheus-operated.monitoring:9090"
   }
+
+  ]
+
 }

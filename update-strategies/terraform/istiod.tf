@@ -7,10 +7,14 @@ resource "helm_release" "istiod" {
   create_namespace = true
   version          = "1.24.2"
 
-  set {
+  set = [
+  {
     name  = "telemetry.enabled"
     value = "true"
   }
+
+  ]
+
 
   depends_on = [helm_release.istio_base]
 }
